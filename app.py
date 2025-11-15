@@ -426,9 +426,13 @@ async def root():
 async def ask_question(question: str = Query(..., description="The question to answer")):
     """Answer a question"""
     try:
+        if not qa_system._initialized:
+            return AnswerResponse(answer="Service is still initializing. Please wait a moment and try again.")
         answer = qa_system.answer(question)
         return AnswerResponse(answer=answer)
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 class QuestionRequest(BaseModel):

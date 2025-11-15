@@ -281,6 +281,14 @@
 
             try {
                 const response = await fetch(`/ask?question=${encodeURIComponent(question)}`);
+                
+                // Check if response is actually JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    throw new Error(`Server returned HTML instead of JSON. Status: ${response.status}. Check if the API is running correctly.`);
+                }
+                
                 const data = await response.json();
 
                 if (response.ok) {
